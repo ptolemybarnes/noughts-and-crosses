@@ -15,7 +15,7 @@ class NoughtsAndCrosses
 		b_2: "5",
 		c_2: "6",
 		a_1: "7",
-		b_1: "9",
+		b_1: "8",
 		c_1: "9",
 	}
 		@moves_array = @loc.keys #makes a list of moves available for the AI.
@@ -47,22 +47,19 @@ class NoughtsAndCrosses
 
 	def moveprompt
 		set_board
-		puts "\nIt is #{@turn}'s turn.\n Please state your move:"
+		puts "\nIt is #{@turn}'s turn.\n"
 
 		if @ai_mode && @turn == "X"
 			move = get_ai_move
 		else 
-			move = gets.chomp.intern # gets user's move.
+			move = get_user_move
 		end
 		
-		if @loc.has_key?(move) && !@move_log.include?(move) # ensures move requested by user is valid and has not been made before.
-			self.move = move
-		elsif move == :exit
+		if move == "exit"
 			@turn = "no winner :-("
 			end_game
 		else
-			puts "Not a valid move."
-			moveprompt
+			move(move)
 		end
 	end
 
@@ -71,7 +68,38 @@ class NoughtsAndCrosses
 		available_moves.shuffle[0]
 	end
 
-	def move=(move)
+	def get_user_move
+		puts "Please state your move:\n Enter a number or type 'exit' to quit."
+		move_input = gets.chomp
+		case move_input
+			when "1"
+				move = :a_3
+			when "2"
+				move = :b_3
+			when "3"
+				move = :c_3
+			when "4"
+				move = :a_2
+			when "5"
+				move = :b_2
+			when "6"
+				move = :c_2
+			when "7"
+				move = :a_1
+			when "8"
+				move = :b_1
+			when "9"
+				move = :c_1
+			when "exit"
+				move = "exit"
+			else
+				puts "Invalid move"
+				get_user_move
+			end
+	move
+	end
+
+	def move(move)
 		@move_log.push move
 		puts "\nAfter #{@move_log.length} moves..."
 		@loc[move] = @turn
