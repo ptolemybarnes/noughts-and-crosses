@@ -1,10 +1,10 @@
 class NoughtsAndCrosses
 
-	def initialize
+	def initialize(ai_mode=false)
 		@start_time = Time.new
 		@move_log = Array.new
 		@turn = "O"
-		@winner = "no winner :-("
+		@ai_mode = ai_mode
 
 		@loc = {
 		a_3: " ",
@@ -17,6 +17,7 @@ class NoughtsAndCrosses
 		b_1: " ",
 		c_1: " ",
 	}
+		@moves_array = @loc.keys #makes a list of moves available for the AI.
 
 	@win_conditions = [
 		[:a_3, :b_3, :c_3],[:a_2, :b_2, :c_2],[:a_1, :b_1, :c_1], #rows
@@ -45,14 +46,18 @@ class NoughtsAndCrosses
 
 	def moveprompt
 		set_board
-
 		puts "\nIt is #{@turn}'s turn.\n Please state your move:"
 
-		move = gets.chomp.intern # gets user's move.
+		if @ai_mode && @turn == "X"
+			move = get_ai_move
+		else 
+			move = gets.chomp.intern # gets user's move.
+		end
 		
 		if @loc.has_key?(move) && !@move_log.include?(move) # ensures move requested by user is valid and has not been made before.
 			self.move = move
 		elsif move == :exit
+			@turn = "no winner :-("
 			end_game
 		else
 			puts "Not a valid move."
@@ -60,11 +65,17 @@ class NoughtsAndCrosses
 		end
 	end
 
+	def get_ai_move #for now, AI will return a random (valid) move.
+		available_moves = @moves_array - @move_log
+		available_moves.shuffle[0]
+	end
+
 	def move=(move)
 		@move_log.push move
 		puts "\nAfter #{@move_log.length} moves..."
 		@loc[move] = @turn
 			if win?
+				set_board
 				end_game
 			else
 				turn_switch
