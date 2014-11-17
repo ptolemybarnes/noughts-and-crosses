@@ -60,7 +60,7 @@ class NoughtsAndCrosses
 		
 		if move == "exit"
 			@turn = "no winner :-("
-			end_game
+			end_game("exit")
 		else
 			move(move)
 		end
@@ -109,12 +109,13 @@ class NoughtsAndCrosses
 
 	def move(move)
 		@move_log.push move
-		puts @move_log
 		puts "After #{@move_log.length} moves..."
 		@loc[move] = @turn
 			if win?
 				set_board
-				end_game
+				end_game("win")
+			elsif @move_log.length == 9
+				end_game("draw")
 			else
 				turn_switch
 				moveprompt
@@ -144,8 +145,16 @@ class NoughtsAndCrosses
 		end
 	end
 
-	def end_game
-		puts "\nGAME OVER!\n The game lasted #{(Time.new - @start_time).to_i} seconds and the winner was #{@turn}'s"
+	def end_game(outcome)
+		manner = case outcome
+			when "win"
+				"the winner was #{@turn}'s."
+			when "draw"
+				"was a draw."
+			when "exit"
+				"there was no winner."
+		end
+		puts "\nGAME OVER!\n The game lasted #{(Time.new - @start_time).to_i} seconds and " + manner
 	end
 
 end
