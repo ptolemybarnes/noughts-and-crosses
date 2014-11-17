@@ -5,17 +5,18 @@ class NoughtsAndCrosses
 		@move_log = Array.new
 		@turn = "O"
 		@ai_mode = ai_mode
+		lineWidth = 80
 
 		@loc = {
-		a_3: " ",
-		b_3: " ",
-		c_3: " ",
-		a_2: " ",
-		b_2: " ",
-		c_2: " ",
-		a_1: " ",
-		b_1: " ",
-		c_1: " ",
+		a_3: "1",
+		b_3: "2",
+		c_3: "3",
+		a_2: "4",
+		b_2: "5",
+		c_2: "6",
+		a_1: "7",
+		b_1: "9",
+		c_1: "9",
 	}
 		@moves_array = @loc.keys #makes a list of moves available for the AI.
 
@@ -25,16 +26,16 @@ class NoughtsAndCrosses
 		[:a_1, :b_2, :c_3],[:c_1, :b_2, :a_3]] #diagonals
 
 	@board = Proc.new do
-			puts "___________________"
-			puts "|     |     |     |"
-			puts "|  #{@loc[:a_3]}  |  #{@loc[:b_3]}  |  #{@loc[:c_3]}  |"
-			puts "|_____|_____|_____|"
-			puts "|     |     |     |"
-			puts "|  #{@loc[:a_2]}  |  #{@loc[:b_2]}  |  #{@loc[:c_2]}  |"
-			puts "|_____|_____|_____|"
-			puts "|     |     |     |"
-			puts "|  #{@loc[:a_1]}  |  #{@loc[:b_1]}  |  #{@loc[:c_1]}  |"
-			puts "|_____|_____|_____|"
+			puts( "___________________".center(lineWidth))
+			puts( "|     |     |     |".center(lineWidth))
+			puts( "|  #{@loc[:a_3]}  |  #{@loc[:b_3]}  |  #{@loc[:c_3]}  |".center(lineWidth))
+			puts( "|_____|_____|_____|".center(lineWidth))
+			puts( "|     |     |     |".center(lineWidth))
+			puts( "|  #{@loc[:a_2]}  |  #{@loc[:b_2]}  |  #{@loc[:c_2]}  |".center(lineWidth))
+			puts( "|_____|_____|_____|".center(lineWidth))
+			puts( "|     |     |     |".center(lineWidth))
+			puts( "|  #{@loc[:a_1]}  |  #{@loc[:b_1]}  |  #{@loc[:c_1]}  |".center(lineWidth))
+			puts( "|_____|_____|_____|".center(lineWidth))
 		end
 		moveprompt
 	end
@@ -112,4 +113,21 @@ class NoughtsAndCrosses
 
 end
 
-game = NoughtsAndCrosses.new
+def game_starter
+	puts "Options:"
+	puts " Enter 1 for two-player mode."
+	puts " Enter 2 to play against the AI."
+	puts " Enter 'exit' to quit."
+	input = gets.chomp
+	if input == "1"
+		NoughtsAndCrosses.new
+	elsif input == "2"
+		NoughtsAndCrosses.new(true)
+	elsif input == "exit"
+	else
+		puts "Invalid option.\n"
+		game_starter
+	end
+end
+
+game_starter
