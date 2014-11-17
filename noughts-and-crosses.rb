@@ -30,6 +30,7 @@ class NoughtsAndCrosses
 			puts "|  #{@loc[:a_1]}  |  #{@loc[:b_1]}  |  #{@loc[:c_1]}  |"
 			puts "|_____|_____|_____|"
 		end
+		moveprompt
 	end
 
 	def set_board
@@ -37,18 +38,25 @@ class NoughtsAndCrosses
 		@board.call
 	end
 
-	def gamehandler
+	def moveprompt
 		set_board
 		puts "\nPlease state your move:"
-		move = gets
-		makemove(move.intern)
+		move = gets.chomp.intern
+		if @loc.has_key?(move)
+			makemove(move)
+		elsif move = :exit
+			end_game
+		else
+			puts "Not a valid move."
+			moveprompt
+		end
 	end
 
 	def makemove(move)
 		@moves.push move
 		puts "\nAfter #{@moves.length} moves..."
 		@loc[move] = "X"
-		gamehandler
+		moveprompt
 	end
 
 	def display_moves(moves)
@@ -56,7 +64,10 @@ class NoughtsAndCrosses
 
 private
 
+	def end_game
+		puts "\nGAME OVER!\n Bye!"
+	end
+
 end
 
 game = NoughtsAndCrosses.new
-game.gamehandler
