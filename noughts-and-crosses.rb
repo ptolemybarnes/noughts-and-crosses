@@ -53,6 +53,9 @@ class NoughtsAndCrosses
 			move = get_ai_move
 		else 
 			move = get_user_move
+			until move # move will return false if it has already been made.
+				move = get_user_move
+			end
 		end
 		
 		if move == "exit"
@@ -71,37 +74,43 @@ class NoughtsAndCrosses
 	def get_user_move
 		puts "Please state your move:\n Enter a number or type 'exit' to quit."
 		move_input = gets.chomp
-		case move_input
-			when "1"
-				move = :a_3
-			when "2"
-				move = :b_3
-			when "3"
-				move = :c_3
-			when "4"
-				move = :a_2
-			when "5"
-				move = :b_2
-			when "6"
-				move = :c_2
-			when "7"
-				move = :a_1
-			when "8"
-				move = :b_1
-			when "9"
-				move = :c_1
-			when "exit"
-				move = "exit"
-			else
-				puts "Invalid move"
-				get_user_move
+			
+			case move_input
+				when "1"
+					move = :a_3
+				when "2"
+					move = :b_3
+				when "3"
+					move = :c_3
+				when "4"
+					move = :a_2
+				when "5"
+					move = :b_2
+				when "6"
+					move = :c_2
+				when "7"
+					move = :a_1
+				when "8"
+					move = :b_1
+				when "9"
+					move = :c_1
+				when "exit"
+					move = "exit"
+				else
+					puts "Invalid move"
+					move = false
+				end
+			if @move_log.include?(move)
+				puts "Move invalid: already made."
+				move = false
 			end
-	move
+		move
 	end
 
 	def move(move)
 		@move_log.push move
-		puts "\nAfter #{@move_log.length} moves..."
+		puts @move_log
+		puts "After #{@move_log.length} moves..."
 		@loc[move] = @turn
 			if win?
 				set_board
