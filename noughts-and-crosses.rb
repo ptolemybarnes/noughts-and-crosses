@@ -1,7 +1,3 @@
-# How to define a board? a 2D array.
-# How to define a piece? A piece should have: 1) location.
-
-
 class NoughtsAndCrosses
 
 	def initialize
@@ -69,7 +65,6 @@ class NoughtsAndCrosses
 		puts "\nAfter #{@move_log.length} moves..."
 		@loc[move] = @turn
 			if win?
-				@winnner = @turn
 				end_game
 			else
 				turn_switch
@@ -91,8 +86,6 @@ class NoughtsAndCrosses
 		end
 		true
 	end
-
-private
 
 	def turn_switch
 		if @turn == "X"
