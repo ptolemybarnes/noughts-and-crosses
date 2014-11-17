@@ -66,9 +66,14 @@ class NoughtsAndCrosses
 		end
 	end
 
-	def get_ai_move #for now, AI will return a random (valid) move.
+	def get_ai_move 
 		available_moves = @moves_array - @move_log
-		available_moves.shuffle[0]
+		if available_moves.include?(:b_2) && @move_log.length < 2
+			move = :b_2 # AI always chooses middle at beginning of game as long as it's a valid move.
+		else 
+			move = best_ai_moves(available_moves) #else AI selects move from best available moves.
+		end
+		move
 	end
 
 	def get_user_move
@@ -105,6 +110,18 @@ class NoughtsAndCrosses
 				move = false
 			end
 		move
+	end
+
+	def best_ai_moves(available_moves)
+		@win_conditions.each do |dim_array|
+			if dim_array.select {|loc| @loc[loc] == "X" || available_moves.include?(loc)}.length == 3
+				return dim_array.select {|loc| @loc[loc] != "X"}.shuffle[0] if dim_array.select {|loc| @loc[loc] != "X"}.length == 1
+				return dim_array.select {|loc| @loc[loc] != "X"}.shuffle[0] if dim_array.select {|loc| @loc[loc] != "X"}.length == 2
+				return dim_array.select {|loc| @loc[loc] != "X"}.shuffle[0] if dim_array.select {|loc| @loc[loc] != "X"}.length == 3
+			end
+		end
+		puts "AI chose random move"
+		available_moves.shuffle[0] # returns random move if there are no available moves that could lead to AI victory.
 	end
 
 	def move(move)
