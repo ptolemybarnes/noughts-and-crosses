@@ -113,15 +113,22 @@ class NoughtsAndCrosses
 	end
 
 	def best_ai_moves(available_moves)
-		@win_conditions.each do |dim_array|
-			if dim_array.select {|loc| @loc[loc] == "X" || available_moves.include?(loc)}.length == 3
-				return dim_array.select {|loc| @loc[loc] != "X"}.shuffle[0] if dim_array.select {|loc| @loc[loc] != "X"}.length == 1
-				return dim_array.select {|loc| @loc[loc] != "X"}.shuffle[0] if dim_array.select {|loc| @loc[loc] != "X"}.length == 2
-				return dim_array.select {|loc| @loc[loc] != "X"}.shuffle[0] if dim_array.select {|loc| @loc[loc] != "X"}.length == 3
+		possible_dim_arrays = []
+		@win_conditions.each do |dim_array| # gets possible win conditions (those that have no coordinates taken by player)
+			possible_dim_arrays.push dim_array if dim_array.select {|loc| @loc[loc] != "O"}.length == 3
 			end
+		moves_to_win = 1
+		until moves_to_win > 3
+			possible_dim_arrays.each do |dim_array| #iterates through possible win conditions to find best move. Starts by searching for move that will win in 1.
+				return how_much_win(dim_array).shuffle[0] if how_much_win(dim_array).length == moves_to_win #immediately returns winning move if it finds one.
+			end
+		moves_to_win += 1
 		end
-		puts "AI chose random move"
 		available_moves.shuffle[0] # returns random move if there are no available moves that could lead to AI victory.
+	end
+
+	def how_much_win(dim_array)
+		dim_array.select {|loc| @loc[loc] != "X"}
 	end
 
 	def move(move)
