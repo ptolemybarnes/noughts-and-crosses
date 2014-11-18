@@ -113,10 +113,7 @@ class NoughtsAndCrosses
 	end
 
 	def best_ai_moves(available_moves)
-		possible_dim_arrays = []
-		@win_conditions.each do |dim_array| # gets possible win conditions (those that have no coordinates taken by player)
-			possible_dim_arrays.push dim_array if dim_array.select {|loc| @loc[loc] != "O"}.length == 3
-			end
+		possible_dim_arrays = @win_conditions.select {|dim_array| dim_array.select {|loc| @loc[loc] != "O"}.length == 3} # gets possible winning conditions.
 		moves_to_win = 1
 		until moves_to_win > 3
 			possible_dim_arrays.each do |dim_array| #iterates through possible win conditions to find best move. Starts by searching for move that will win in 1.
