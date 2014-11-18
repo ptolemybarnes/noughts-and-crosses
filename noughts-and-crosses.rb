@@ -1,26 +1,19 @@
 class NoughtsAndCrosses
 
-	def initialize(ai_mode=false,difficulty=3)
-		@start_time = Time.new
-		@move_log = Array.new
+	def initialize(game_options)
 		@turn = "O"
-		@ai_mode = ai_mode
-		@difficulty = difficulty
-
+		game_options[:mode] == "ai-mode" ? @ai_mode = true : @ai_mode = false
+		@difficulty = game_options[:difficulty]
+		@rounds = game_options[:rounds]
+		@rounds_played = 0
+		@score = {
+			"X" => 0,
+			"O" => 0
+		}
 		lineWidth = 80
 
-		@loc = {
-		1 => "1",
-		2 => "2",
-		3 => "3",
-		4 => "4",
-		5 => "5",
-		6 => "6",
-		7 => "7",
-		8 => "8",
-		9 => "9",
-	}
-		@moves_array = @loc.keys #makes a list of moves available for the AI.
+		set_game
+		@moves_array = @loc.keys #makes an array of moves available for the AI.
 
 	@win_conditions = [
 		[1, 2, 3],[4, 5, 6],[7, 8, 9], #rows
@@ -39,16 +32,36 @@ class NoughtsAndCrosses
 			puts( "|  #{@loc[7]}  |  #{@loc[8]}  |  #{@loc[9]}  |".center(lineWidth))
 			puts( "|_____|_____|_____|".center(lineWidth))
 		end
-		moveprompt
+
+	@get_score = Proc.new do
+			puts " X : #{@score["X"]}"
+			puts " O : #{@score["O"]}"
+		end
+
+	moveprompt
 	end
 
-	def set_board
-		puts "Let the game begin!!!" if @move_log.length == 0
-		@board.call
+	def set_game	
+		puts "Let the game begin!!!"
+
+		@loc = {
+		1 => "1",
+		2 => "2",
+		3 => "3",
+		4 => "4",
+		5 => "5",
+		6 => "6",
+		7 => "7",
+		8 => "8",
+		9 => "9",
+	}
+
+	@start_time = Time.new
+	@move_log = Array.new
 	end
 
 	def moveprompt
-		set_board
+		@board.call
 		puts "\nIt is #{@turn}'s turn.\n"
 
 		if @ai_mode && @turn == "X"
@@ -108,7 +121,7 @@ class NoughtsAndCrosses
 		moves_to_win = 1
 		until moves_to_win > 3
 			possible_dim_arrays.each do |dim_array| #iterates through possible win conditions to find best move. Starts by searching for move that will win in 1.
-				if moves_to_win == 1 && block_player_move
+				if moves_to_win > 1 && block_player_move # will try to block player if it cannot win in one move.
 					puts "AI blocked player!"
 					return block_player_move
 				end
@@ -145,9 +158,10 @@ class NoughtsAndCrosses
 		puts "After #{@move_log.length} moves..."
 		@loc[move] = @turn
 			if win?
-				set_board
+				@board.call
 				end_game("win")
 			elsif @move_log.length == 9
+				@board.call
 				end_game("draw")
 			else
 				turn_switch
@@ -179,6 +193,7 @@ class NoughtsAndCrosses
 	end
 
 	def end_game(outcome)
+		@rounds_played += 1
 		manner = case outcome
 			when "win"
 				"the winner was #{@turn}'s."
@@ -187,34 +202,77 @@ class NoughtsAndCrosses
 			when "exit"
 				"there was no winner."
 		end
+		@score[@turn] += 1 if outcome == "win"
 		puts "\nGAME OVER!\n The game lasted #{(Time.new - @start_time).to_i} seconds and " + manner
+		
+		if @rounds_played == @rounds || outcome == "exit"
+			end_match
+		else
+			reset_game
+		end
 	end
 
+	def reset_game
+		puts "The score is:"
+		@get_score.call
+		puts "Resetting game..."
+		set_game
+		@turn = "O"
+		moveprompt
+	end
+
+	def end_match
+		puts "\nMatch complete. The final score was:"
+		@get_score.call
+	end
 end
 
 def game_starter
-	puts "Options:"
-	puts " Enter 1 for two-player mode."
-	puts " Enter 2 to play against the AI."
-	puts " Enter 'exit' to quit."
-	input = gets.chomp
-	if input == "1"
-		NoughtsAndCrosses.new
-	elsif input == "2"
-		difficulty = false
-		until difficulty
-			puts "Please choose a difficulty:\n Enter 3 for hard mode. \n Enter 2 for normal \n Enter 1 for easy mode."
-			input = gets.chomp.to_i
-			if input == (3 || 2) || 1
-				difficulty = input
+
+	game_options = {
+		mode: false,
+		difficulty: false,
+		rounds: false
+	}
+
+	until game_options[:mode] # offer game options until player selects a valid one or exits.
+		puts "Options:"
+			puts " Enter 1 for two-player mode.\n"
+			puts " Enter 2 to play against the AI.\n"
+			puts " Enter 'exit' to quit."
+		mode_choice = gets.chomp
+		
+		if mode_choice == "1"
+			game_options[:mode] = "two-player"
+
+		elsif mode_choice == "2"
+			game_options[:mode] = "ai-mode"
+
+			until game_options[:difficulty] # select difficulty of AI mode.
+				puts "Please choose a difficulty:\n Enter 3 for hard mode. \n Enter 2 for normal \n Enter 1 for easy mode."
+				difficulty_choice = gets.chomp.to_i
+				if difficulty_choice == (3 || 2) || 1
+					game_options[:difficulty] = difficulty_choice
+				end
 			end
+
+		elsif mode_choice == "exit"
+			return
+		else
+			puts "Invalid option.\n"
 		end
-		NoughtsAndCrosses.new(true, difficulty)
-	elsif input == "exit"
-	else
-		puts "Invalid option.\n"
-		game_starter
 	end
+
+	until game_options[:rounds] # select number of rounds.
+		puts "Please input number of rounds to play..."
+		rounds_choice = gets.chomp.to_i
+		if rounds_choice > 0 && rounds_choice.odd?
+			game_options[:rounds] = rounds_choice
+		else
+			puts "Enter an odd number greater than 0."
+		end
+	end
+	NoughtsAndCrosses.new(game_options)
 end
 
 game_starter
