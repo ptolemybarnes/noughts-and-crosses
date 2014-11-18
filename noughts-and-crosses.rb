@@ -1,10 +1,12 @@
 class NoughtsAndCrosses
 
-	def initialize(ai_mode=false)
+	def initialize(ai_mode=false,difficulty=3)
 		@start_time = Time.new
 		@move_log = Array.new
 		@turn = "O"
 		@ai_mode = ai_mode
+		@difficulty = difficulty
+
 		lineWidth = 80
 
 		@loc = {
@@ -68,9 +70,15 @@ class NoughtsAndCrosses
 
 	def get_ai_move 
 		available_moves = @moves_array - @move_log
-		if available_moves.include?(5) && @move_log.length < 2
+		# if difficulty settings are engaged, AI will sometimes randomly select moves rather than calculating the best move.
+		if @difficulty == 2 && rand(6) == 5
+			move = available_moves.shuffle[0] 
+		elsif @difficulty == 1 && rand(4) == 3
+			move = available_moves.shuffle[0] 
+			puts 'AI chose a random move.'
+		elsif available_moves.include?(5) && @move_log.length < 2
 			move = 5 # AI always chooses middle at beginning of game as long as it's a valid move.
-		else 
+		else
 			move = best_ai_moves(available_moves) #else AI selects move from best available moves.
 		end
 		move
@@ -92,6 +100,8 @@ class NoughtsAndCrosses
 		end
 	move
 	end
+
+###### This section provides AI functionality
 
 	def best_ai_moves(available_moves)
 		possible_dim_arrays = @win_conditions.select {|dim_array| dim_array.select {|loc| @loc[loc] != "O"}.length == 3} # gets possible winning conditions.
@@ -127,6 +137,8 @@ class NoughtsAndCrosses
 			end
 		move
 	end
+
+###### End of AI section.
 
 	def move(move)
 		@move_log.push move
@@ -189,7 +201,15 @@ def game_starter
 	if input == "1"
 		NoughtsAndCrosses.new
 	elsif input == "2"
-		NoughtsAndCrosses.new(true)
+		difficulty = false
+		until difficulty
+			puts "Please choose a difficulty:\n Enter 3 for hard mode. \n Enter 2 for normal \n Enter 1 for easy mode."
+			input = gets.chomp.to_i
+			if input == (3 || 2) || 1
+				difficulty = input
+			end
+		end
+		NoughtsAndCrosses.new(true, difficulty)
 	elsif input == "exit"
 	else
 		puts "Invalid option.\n"
