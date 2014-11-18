@@ -1,7 +1,6 @@
 class NoughtsAndCrosses
 
 	def initialize(game_options)
-		@turn = "O"
 		game_options[:mode] == "ai-mode" ? @ai_mode = true : @ai_mode = false
 		@difficulty = game_options[:difficulty]
 		@rounds = game_options[:rounds]
@@ -13,6 +12,9 @@ class NoughtsAndCrosses
 		lineWidth = 80
 
 		set_game
+		puts "\n Flipping for start..."
+		rand(2) == 0 ? @turn = "O" : @turn = "X" # flips for start.
+		puts "#{@turn}s will start the game!\n"
 		@moves_array = @loc.keys #makes an array of moves available for the AI.
 
 	@win_conditions = [
@@ -74,7 +76,6 @@ class NoughtsAndCrosses
 		end
 		
 		if move == "exit"
-			@turn = "no winner :-("
 			end_game("exit")
 		else
 			move(move)
@@ -164,7 +165,7 @@ class NoughtsAndCrosses
 				@board.call
 				end_game("draw")
 			else
-				turn_switch
+				turn_switch(@turn)
 				moveprompt
 			end
 	end
@@ -184,8 +185,8 @@ class NoughtsAndCrosses
 		true
 	end
 
-	def turn_switch
-		if @turn == "X"
+	def turn_switch(turn)
+		if turn == "X"
 			@turn = "O"
 		else
 			@turn = "X"
@@ -194,18 +195,21 @@ class NoughtsAndCrosses
 
 	def end_game(outcome)
 		@rounds_played += 1
-		manner = case outcome
+		case outcome
 			when "win"
-				"the winner was #{@turn}'s."
+				manner = "the winner was #{@turn}'s."
+				@score[@turn] += 1
+				@turn = turn_switch(@turn) # so loser will start next round.
 			when "draw"
-				"was a draw."
+				manner = "was a draw."
+				@turn = turn_switch(@turn)
 			when "exit"
-				"there was no winner."
+				manner = "there was no winner."
 		end
-		@score[@turn] += 1 if outcome == "win"
+		
 		puts "\nGAME OVER!\n The game lasted #{(Time.new - @start_time).to_i} seconds and " + manner
 		
-		if @rounds_played == @rounds || outcome == "exit"
+		if @rounds_played == @rounds || manner == "exit"
 			end_match
 		else
 			reset_game
@@ -217,13 +221,21 @@ class NoughtsAndCrosses
 		@get_score.call
 		puts "Resetting game..."
 		set_game
-		@turn = "O"
 		moveprompt
 	end
 
 	def end_match
 		puts "\nMatch complete. The final score was:"
 		@get_score.call
+		puts ""
+		case @score["X"] <=> @score["O"]
+			when 0
+				puts "The match was a draw."
+			when 1
+				puts "Xs is the victor!"
+			when -1
+				puts "Os is the victor!"
+		end
 	end
 end
 
