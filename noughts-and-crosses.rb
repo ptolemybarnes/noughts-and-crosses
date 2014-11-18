@@ -8,33 +8,33 @@ class NoughtsAndCrosses
 		lineWidth = 80
 
 		@loc = {
-		a_3: "1",
-		b_3: "2",
-		c_3: "3",
-		a_2: "4",
-		b_2: "5",
-		c_2: "6",
-		a_1: "7",
-		b_1: "8",
-		c_1: "9",
+		1 => "1",
+		2 => "2",
+		3 => "3",
+		4 => "4",
+		5 => "5",
+		6 => "6",
+		7 => "7",
+		8 => "8",
+		9 => "9",
 	}
 		@moves_array = @loc.keys #makes a list of moves available for the AI.
 
 	@win_conditions = [
-		[:a_3, :b_3, :c_3],[:a_2, :b_2, :c_2],[:a_1, :b_1, :c_1], #rows
-		[:a_1, :a_2, :a_3],[:b_1, :b_2, :b_3],[:c_1, :c_2, :c_3], #columns
-		[:a_1, :b_2, :c_3],[:c_1, :b_2, :a_3]] #diagonals
+		[1, 2, 3],[4, 5, 6],[7, 8, 9], #rows
+		[7, 4, 1],[8, 5, 2],[9, 6, 3], #columns
+		[7, 5, 3],[9, 5, 1]] #diagonals
 
 	@board = Proc.new do
 			puts( "___________________".center(lineWidth))
 			puts( "|     |     |     |".center(lineWidth))
-			puts( "|  #{@loc[:a_3]}  |  #{@loc[:b_3]}  |  #{@loc[:c_3]}  |".center(lineWidth))
+			puts( "|  #{@loc[1]}  |  #{@loc[2]}  |  #{@loc[3]}  |".center(lineWidth))
 			puts( "|_____|_____|_____|".center(lineWidth))
 			puts( "|     |     |     |".center(lineWidth))
-			puts( "|  #{@loc[:a_2]}  |  #{@loc[:b_2]}  |  #{@loc[:c_2]}  |".center(lineWidth))
+			puts( "|  #{@loc[4]}  |  #{@loc[5]}  |  #{@loc[6]}  |".center(lineWidth))
 			puts( "|_____|_____|_____|".center(lineWidth))
 			puts( "|     |     |     |".center(lineWidth))
-			puts( "|  #{@loc[:a_1]}  |  #{@loc[:b_1]}  |  #{@loc[:c_1]}  |".center(lineWidth))
+			puts( "|  #{@loc[7]}  |  #{@loc[8]}  |  #{@loc[9]}  |".center(lineWidth))
 			puts( "|_____|_____|_____|".center(lineWidth))
 		end
 		moveprompt
@@ -68,8 +68,8 @@ class NoughtsAndCrosses
 
 	def get_ai_move 
 		available_moves = @moves_array - @move_log
-		if available_moves.include?(:b_2) && @move_log.length < 2
-			move = :b_2 # AI always chooses middle at beginning of game as long as it's a valid move.
+		if available_moves.include?(5) && @move_log.length < 2
+			move = 5 # AI always chooses middle at beginning of game as long as it's a valid move.
 		else 
 			move = best_ai_moves(available_moves) #else AI selects move from best available moves.
 		end
@@ -82,23 +82,23 @@ class NoughtsAndCrosses
 			
 			case move_input
 				when "1"
-					move = :a_3
+					move = 1
 				when "2"
-					move = :b_3
+					move = 2
 				when "3"
-					move = :c_3
+					move = 3
 				when "4"
-					move = :a_2
+					move = 4
 				when "5"
-					move = :b_2
+					move = 5
 				when "6"
-					move = :c_2
+					move = 6
 				when "7"
-					move = :a_1
+					move = 7
 				when "8"
-					move = :b_1
+					move = 8
 				when "9"
-					move = :c_1
+					move = 9
 				when "exit"
 					move = "exit"
 				else
