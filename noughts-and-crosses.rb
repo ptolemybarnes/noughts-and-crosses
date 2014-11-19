@@ -237,54 +237,74 @@ class NoughtsAndCrosses
 				puts "Os is the victor!"
 		end
 	end
-end
 
-def game_starter
-
+	def NoughtsAndCrosses.game_options
 	game_options = {
-		mode: false,
-		difficulty: false,
-		rounds: false
-	}
+		mode: 		Proc.new do
+							puts "Options:"
+							puts " Enter 1 for two-player mode.\n"
+							puts " Enter 2 to play against the AI.\n"
+							puts "(or type 'exit' to quit)."
 
-	until game_options[:mode] # offer game options until player selects a valid one or exits.
-		puts "Options:"
-			puts " Enter 1 for two-player mode.\n"
-			puts " Enter 2 to play against the AI.\n"
-			puts " Enter 'exit' to quit."
-		mode_choice = gets.chomp
-		
-		if mode_choice == "1"
-			game_options[:mode] = "two-player"
+							choice = gets.chomp
+								if choice == "1"
+									mode_choice = "two-player"
+								elsif choice == "2"
+									mode_choice = "ai-mode"
+								elsif choice == "exit"
+									mode_choice = "exit"
+								else
+									puts "Invalid option."
+								end
 
-		elsif mode_choice == "2"
-			game_options[:mode] = "ai-mode"
+						mode_choice ||= false
+						end,
 
-			until game_options[:difficulty] # select difficulty of AI mode.
-				puts "Please choose a difficulty:\n Enter 3 for hard mode. \n Enter 2 for normal \n Enter 1 for easy mode."
-				difficulty_choice = gets.chomp.to_i
-				if difficulty_choice == (3 || 2) || 1
-					game_options[:difficulty] = difficulty_choice
-				end
-			end
+		difficulty: Proc.new do
+							puts "Options:"
+							puts " Please choose a difficulty:\n Enter 3 for hard mode. \n Enter 2 for normal \n Enter 1 for easy mode \n(or type 'exit' to quit)."
 
-		elsif mode_choice == "exit"
-			return
-		else
-			puts "Invalid option.\n"
-		end
+							choice = gets.chomp
+								if [1, 2, 3].include?(choice.to_i)
+									difficulty_choice = choice.to_i
+								elsif choice == "exit"
+									difficulty_choice = "exit"
+								else
+									puts "Invalid option."
+								end
+
+						difficulty_choice ||= false
+						end,
+
+		rounds: 	Proc.new do
+							puts "Options:"
+							puts " Please input number of rounds to play (or type 'exit' to quit)."
+
+							choice = gets.chomp
+								if choice.to_i > 0 && choice.to_i.odd?
+									rounds_choice = choice.to_i
+								elsif choice == "exit"
+									mode_choice = "exit"
+								else
+									puts "Invalid option."
+								end
+
+						rounds_choice ||= false
+						end
+		}
 	end
-
-	until game_options[:rounds] # select number of rounds.
-		puts "Please input number of rounds to play..."
-		rounds_choice = gets.chomp.to_i
-		if rounds_choice > 0 && rounds_choice.odd?
-			game_options[:rounds] = rounds_choice
-		else
-			puts "Enter an odd number greater than 0."
-		end
-	end
-	NoughtsAndCrosses.new(game_options)
 end
 
-game_starter
+def game_handler(game_options) # game_handler takes the options that need to be set from the game's class and then feeds them into a new game-object.
+	output_options = Hash.new(false)
+	
+	game_options.each do |option, bloc|
+		until output_options[option]
+			output_options[option] = bloc.call
+			exit if output_options[option] == "exit"
+		end
+	end
+output_options
+end
+
+NoughtsAndCrosses.new(game_handler(NoughtsAndCrosses.game_options))
