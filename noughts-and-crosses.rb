@@ -1,5 +1,6 @@
-class NoughtsAndCrosses
+require './game-handler'
 
+class NoughtsAndCrosses
 	def initialize(game_options)
 		game_options[:mode] == "ai-mode" ? @ai_mode = true : @ai_mode = false
 		@difficulty = game_options[:difficulty]
@@ -293,18 +294,6 @@ class NoughtsAndCrosses
 						end
 		}
 	end
-end
-
-def game_handler(game_options) # game_handler takes the options that need to be set from the game's class and then feeds them into a new game-object.
-	output_options = Hash.new(false)
-	
-	game_options.each do |option, bloc|
-		until output_options[option]
-			output_options[option] = bloc.call
-			exit if output_options[option] == "exit"
-		end
-	end
-output_options
 end
 
 NoughtsAndCrosses.new(game_handler(NoughtsAndCrosses.game_options))
